@@ -2,22 +2,13 @@ module.exports = accounts = [
   {
     username: "dog_cats_lover",
     password: "Bluesky1",
-    hashTags: ["developer"],
+    hashTags: ["love"],
     comments: [
       "i like your content",
       "keep the good work",
       "are you from Cambridge Massachuseets? i really like you content",
     ],
     activities: {
-      follow: {
-        "4/13/2020": 0,
-      },
-      like: {
-        "4/13/2020": 0,
-      },
-      commented: {
-        "4/13/2020": 0,
-      },
       todayUnFollow: 0,
       todayLikesGiven: 0,
       todayCommentsGiven: 0,
@@ -37,14 +28,15 @@ module.exports = accounts = [
       isBotOn: true,
       do_unfollows: false,
       unfollow_after_days: 2,
-      likePost: true,
-      commentPost: true,
-      followAccount: true,
+      likePost: false,
+      commentPost: false,
+      followAccount: false,
     },
     activities: {
       todayLike: 0,
       todayComment: 0,
       todayFollow: 0,
+      activitiesBlocked: false,
     },
   },
 ];

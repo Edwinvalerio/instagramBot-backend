@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const cnf = require("./config");
 const accounts = require("./accounts");
 
-async function bot() {
+async function bot(accounts) {
   for (let account of accounts) {
     // CHECK IF THE BOT IS ON FOR PARTICAL USER
 
@@ -18,8 +18,14 @@ async function bot() {
       await page.waitForSelector('input[name="username"]');
       await page.type('input[name="username"]', account.username);
       await page.type('input[name="password"]', account.password);
-      await page.waitFor(4000);
+      await page.waitFor(Math.random() * 4000 + 3500);
       await page.click('button[type="submit"]');
+      await page.waitForNavigation();
+      await page.evaluate((e) => {
+        if(document.querySelector(`.eiCW-`)){
+          console.log('worng password')
+      }
+      });
 
       /*====================================
                           GRAB A RANDOM HASHTAG
@@ -36,36 +42,63 @@ async function bot() {
 
       //  scroll page down 3 times
       await page.evaluate(() => {
-        window.scrollBy(0, window.innerHeight);
-      });
-      await page.evaluate(() => {
-        window.scrollBy(0, window.innerHeight);
-      });
-      await page.evaluate(() => {
-        window.scrollBy(0, window.innerHeight);
+        for (let i = 0; i < 10; i++) {
+          setTimeout(() => {
+            window.scrollBy(0, window.innerHeight);
+          }, 1000);
+        }
       });
 
       // GET ALL RECENTS POST
-      const allRecentPostLinks = await page.evaluate(() =>
+      let allRecentPostLinks = await page.evaluate(() =>
         Array.from(
           document.querySelectorAll("article :nth-child(2) > a"),
           (e) => e.href
         )
       );
-      console.log(allRecentPostLinks);
+      allRecentPostLinks.splice(10);
 
-      for (let postLink of allRecentPostLinks.splice(8)) {
+      for (let postLink of allRecentPostLinks) {
+        console.log(allRecentPostLinks);
         await page.goto(postLink);
         // GET ACCOUNT USERNAME
         const accountUser = await page.evaluate(async (e) => {
           return await document.querySelector(".ZIAjV").innerText;
         });
         console.log("checking ====> ", accountUser);
+        /*=============================
+            FOLLOE ACCOUNT IF ENABLE BY USER
+            =============================*/
+        if (account.settings.followAccount) {
+          try {
+            // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
+            const isFollowing = await page.evaluate((e) => {
+              return document.querySelector(".oW_lN").innerText == "Following";
+            });
+
+            // IF NOT FOLLOWING USER (CLICK FOLLOW)
+            if (isFollowing == false) {
+              await page.waitForSelector(".oW_lN");
+              await page.waitFor(Math.random() * 4000 + 3500);
+              await page.click(".oW_lN").then(() => {
+                //   TODO: ADD USER TO DATABASE
+                console.log("following ===> ", accountUser);
+              });
+            } else {
+              console.log("Already following ===> ", accountUser);
+            }
+
+            await page.waitFor(Math.random() * 4000);
+          } catch (error) {
+            console.log("Erro Following User", error);
+          }
+        }
 
         /*=============================
             LIKE POST IF ENABLE BY USER SETTINGS
             =============================*/
         if (account.settings.likePost) {
+          await page.waitForSelector(`[aria-label="Unlike"]`);
           const isPostLiked = await page.evaluate((e) => {
             return document.querySelector(`[aria-label="Unlike"]`)
               ? true
@@ -105,43 +138,16 @@ async function bot() {
             console.log("Erro commenting", error);
           }
         }
-
-        /*=============================
-            FOLLOE ACCOUNT IF ENABLE BY USER
-            =============================*/
-        if (account.settings.followAccount) {
-          try {
-            // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
-            const isFollowing = await page.evaluate((e) => {
-              return document.querySelector(".oW_lN").innerText == "Following";
-            });
-
-            // IF NOT FOLLOWING USER (CLICK FOLLOW)
-            if (isFollowing == false) {
-              await page.waitForSelector(".oW_lN");
-              await page.waitFor(Math.random() * 4000 + 3500);
-              await page.click(".oW_lN").then(() => {
-                //   TODO: ADD USER TO DATABASE
-                console.log("following ===> ", accountUser);
-              });
-            } else {
-              console.log("Already following ===> ", accountUser);
-            }
-
-            await page.waitFor(Math.random() * 4000);
-          } catch (error) {
-            console.log("Erro Following User", error);
-          }
-        }
       }
-      console.log("====== OPERATION COMPLETED ======");
     } else {
       console.log("BOT is off for ===> ", account.username);
     }
   }
+  console.log("=================================");
+  console.log("====== OPERATION COMPLETED ======");
+  console.log("======== NEXT RUN IN 1HR ========");
+  console.log("=================================");
 }
-
-bot();
 
 module.exports = bot;
 
