@@ -2,16 +2,19 @@ const puppeteer = require("puppeteer");
 const cnf = require("./config");
 const accounts = require("./accounts");
 
-function bot() {
+async function bot() {
   for (let account of accounts) {
-    (async () => {
+    // CHECK IF THE BOT IS ON FOR PARTICAL USER
+
+    if (account.settings.isBotOn) {
+      console.log("BOT ACTIVE FOR => ", account.username);
       const browser = await puppeteer.launch({ headless: false });
       const page = await browser.newPage();
       page.setViewport({ width: 800, height: 800 });
       await page.goto("https://www.instagram.com/accounts/login/?hl=en");
       /*====================================
-                        LOG IN TO ACCOUNT
-            ====================================*/
+                          LOG IN TO ACCOUNT
+              ====================================*/
       await page.waitForSelector('input[name="username"]');
       await page.type('input[name="username"]', account.username);
       await page.type('input[name="password"]', account.password);
@@ -19,12 +22,10 @@ function bot() {
       await page.click('button[type="submit"]');
 
       /*====================================
-                        GRAB A RANDOM HASHTAG
-            ====================================*/
+                          GRAB A RANDOM HASHTAG
+              ====================================*/
 
-      await page.waitFor(4000);
-
-      await page.waitFor(4000);
+      await page.waitFor(Math.random() * 4000 + 3500);
 
       const randomTag =
         account.hashTags[Math.floor(Math.random() * account.hashTags.length)];
@@ -33,13 +34,27 @@ function bot() {
         `https://www.instagram.com/explore/tags/${randomTag}/?hl=en`
       );
 
+      //  scroll page down 3 times
+      await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);
+      });
+      await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);
+      });
+      await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);
+      });
+
       // GET ALL RECENTS POST
       const allRecentPostLinks = await page.evaluate(() =>
-        Array.from(document.querySelectorAll(".v1Nh3 > a"), (e) => e.href)
+        Array.from(
+          document.querySelectorAll("article :nth-child(2) > a"),
+          (e) => e.href
+        )
       );
       console.log(allRecentPostLinks);
 
-      for (let postLink of allRecentPostLinks) {
+      for (let postLink of allRecentPostLinks.splice(8)) {
         await page.goto(postLink);
         // GET ACCOUNT USERNAME
         const accountUser = await page.evaluate(async (e) => {
@@ -48,8 +63,8 @@ function bot() {
         console.log("checking ====> ", accountUser);
 
         /*=============================
-          LIKE POST IF ENABLE BY USER SETTINGS
-          =============================*/
+            LIKE POST IF ENABLE BY USER SETTINGS
+            =============================*/
         if (account.settings.likePost) {
           const isPostLiked = await page.evaluate((e) => {
             return document.querySelector(`[aria-label="Unlike"]`)
@@ -58,61 +73,81 @@ function bot() {
           });
           if (!isPostLiked) {
             await page.waitForSelector(".wpO6b");
-            await page.waitFor(Math.random() * 4000);
+            await page.waitFor(Math.random() * 4000 + 3500);
             await page.click(".wpO6b");
-            await page.waitFor(Math.random() * 4000);
+            await page.waitFor(Math.random() * 4000 + 3500);
             console.log("Post Liked ==> ", postLink);
           } else {
             console.log("Post Already liked ==> ", postLink);
           }
-          await page.waitFor(4500);
+          await page.waitFor(Math.random() * 4000 + 3500);
         }
+        // let isLikeBlocked = document.querySelector('.piCib') ? true : false
 
         /*=============================
-          COMMMENT POST IF ENABLE BY USER
-          =============================*/
+            COMMMENT POST IF ENABLE BY USER
+            =============================*/
 
         if (account.settings.commentPost) {
-          await page.waitForSelector(".Ypffh");
-          await page.waitFor(Math.random() * 4000);
-          await page.type(
-            ".Ypffh",
-            account.comments[
-              Math.floor(Math.random() * account.comments.length) - 1
-            ]
-          );
-          await page.waitFor(3000);
-          await page.keyboard.press("Enter"); // Enter Key
-          await page.waitFor(3000);
+          try {
+            await page.waitForSelector(".Ypffh");
+            await page.waitFor(Math.random() * 4000 + 3500);
+            await page.type(
+              ".Ypffh",
+              account.comments[
+                Math.floor(Math.random() * account.comments.length) - 1
+              ]
+            );
+            await page.waitFor(Math.random() * 4000 + 3500);
+            await page.keyboard.press("Enter"); // Enter Key
+            await page.waitFor(Math.random() * 4000 + 3500);
+          } catch (error) {
+            console.log("Erro commenting", error);
+          }
         }
 
         /*=============================
-          FOLLOE ACCOUNT IF ENABLE BY USER
-          =============================*/
+            FOLLOE ACCOUNT IF ENABLE BY USER
+            =============================*/
         if (account.settings.followAccount) {
-          // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
-          const isFollowing = await page.evaluate((e) => {
-            return document.querySelector(".oW_lN").innerText == "Following";
-          });
-
-          // IF NOT FOLLOWING USER (CLICK FOLLOW)
-          if (isFollowing == false) {
-            await page.waitForSelector(".oW_lN");
-            await page.waitFor(Math.random() * 4000 + 3500);
-            await page.click(".oW_lN").then(() => {
-              //   TODO: ADD USER TO DATABASE
-              console.log("following ===> ", accountUser);
+          try {
+            // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
+            const isFollowing = await page.evaluate((e) => {
+              return document.querySelector(".oW_lN").innerText == "Following";
             });
-          } else {
-            console.log("Already following ===> ", accountUser);
-          }
 
-          await page.waitFor(Math.random() * 4000);
+            // IF NOT FOLLOWING USER (CLICK FOLLOW)
+            if (isFollowing == false) {
+              await page.waitForSelector(".oW_lN");
+              await page.waitFor(Math.random() * 4000 + 3500);
+              await page.click(".oW_lN").then(() => {
+                //   TODO: ADD USER TO DATABASE
+                console.log("following ===> ", accountUser);
+              });
+            } else {
+              console.log("Already following ===> ", accountUser);
+            }
+
+            await page.waitFor(Math.random() * 4000);
+          } catch (error) {
+            console.log("Erro Following User", error);
+          }
         }
       }
       console.log("====== OPERATION COMPLETED ======");
-    })();
+    } else {
+      console.log("BOT is off for ===> ", account.username);
+    }
   }
 }
 
+bot();
+
 module.exports = bot;
+
+// const r = document.querySelectorAll(`article:nth-child(2) > div  div a`)
+// for(let i of r){
+//     console.log(i.href)
+// }
+
+// blocked window class = .piCib

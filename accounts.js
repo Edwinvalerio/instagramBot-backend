@@ -2,32 +2,49 @@ module.exports = accounts = [
   {
     username: "dog_cats_lover",
     password: "Bluesky1",
-    hashTags: ["quepalomos"],
+    hashTags: ["developer"],
     comments: [
       "i like your content",
       "keep the good work",
       "are you from Cambridge Massachuseets? i really like you content",
     ],
     activities: {
-      todayFollow: 0,
+      follow: {
+        "4/13/2020": 0,
+      },
+      like: {
+        "4/13/2020": 0,
+      },
+      commented: {
+        "4/13/2020": 0,
+      },
       todayUnFollow: 0,
       todayLikesGiven: 0,
       todayCommentsGiven: 0,
       accountsFollowedByBot: [
-        { user: "mike", dateFollowed: "4/13/2020" },
-        { user: "mike", dateFollowed: "4/13/2020" },
-        { user: "mike", dateFollowed: "4/13/2020" },
+        {
+          user: "mike",
+          liked: false,
+          commented: false,
+          dateFollowed: "4/13/2020",
+        },
       ],
     },
     settings: {
-      run_every_x_hours: 1,
-      like_ratio: 0.75,
-      follow_ratio: 0.25,
+      maxDeilyLikes: 500,
+      maxDeilyComment: 500,
+      maxDeilyFollow: 500,
+      isBotOn: true,
       do_unfollows: false,
       unfollow_after_days: 2,
-      likePost: false,
-      commentPost: false,
+      likePost: true,
+      commentPost: true,
       followAccount: true,
+    },
+    activities: {
+      todayLike: 0,
+      todayComment: 0,
+      todayFollow: 0,
     },
   },
 ];
