@@ -20,12 +20,6 @@ async function bot(accounts) {
       await page.type('input[name="password"]', account.password);
       await page.waitFor(Math.random() * 4000 + 3500);
       await page.click('button[type="submit"]');
-      await page.waitForNavigation();
-      await page.evaluate((e) => {
-        if(document.querySelector(`.eiCW-`)){
-          console.log('worng password')
-      }
-      });
 
       /*====================================
                           GRAB A RANDOM HASHTAG

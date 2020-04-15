@@ -36,35 +36,34 @@ app.post("/api/createAccount", (req, res) => {
       todayCommentsGiven: req.body.todayCommentsGiven,
       accountsFollowedByBot: req.body.accountsFollowedByBot,
     },
-    // settings: {
-    //   maxDeilyLikes: {
-    //     type: req.body.maxDeilyLikes,
-    //   },
-    //   maxDeilyComment: {
-    //     type: req.body.maxDeilyComment,
-    //   },
-    //   maxDeilyFollow: {
-    //     type: req.body.maxDeilyFollow,
-    //   },
-    //   isBotOn: req.body.isBotOn,
-    //   do_unfollows: req.body.do_unfollows,
-    //   unfollow_after_days: req.body.unfollow_after_days,
-    //   likePost: req.body.likePost,
-    //   commentPost: req.body.commentPost,
-    //   followAccount: req.body.followAccount,
-    // },
-    // activities: {
-    //   todayLike: req.body.todayLike,
-    //   todayComment: req.body.todayComment,
-    //   todayFollow: req.body.todayFollow,
-    //   activitiesBlocked: req.body.activitiesBlocked,
-    // },
+    settings: {
+      maxDeilyLikes: {
+        type: req.body.maxDeilyLikes,
+      },
+      maxDeilyComment: {
+        type: req.body.maxDeilyComment,
+      },
+      maxDeilyFollow: {
+        type: req.body.maxDeilyFollow,
+      },
+      isBotOn: req.body.isBotOn,
+      do_unfollows: req.body.do_unfollows,
+      unfollow_after_days: req.body.unfollow_after_days,
+      likePost: req.body.likePost,
+      commentPost: req.body.commentPost,
+      followAccount: req.body.followAccount,
+    },
+    activities: {
+      todayLike: req.body.todayLike,
+      todayComment: req.body.todayComment,
+      todayFollow: req.body.todayFollow,
+      activitiesBlocked: req.body.activitiesBlocked,
+    },
   });
 });
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
 accountSchema.find((err, accounts) => {
-  console.log(accounts);
   if (err) console.log(err);
   else bot(accounts);
 });
