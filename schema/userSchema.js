@@ -1,8 +1,23 @@
 const mongoose = require("mongoose");
 
 const accountSchema = new mongoose.Schema({
-  username: String,
-  password: String,
+  instagramUsername: {
+    type: String,
+    default: "",
+  },
+  instagramPassword: {
+    type: String,
+    default: "",
+  },
+  memberEmail: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  memberPassword: {
+    type: String,
+    required: true,
+  },
   isMemberShipAcctive: {
     type: Boolean,
     default: false,
