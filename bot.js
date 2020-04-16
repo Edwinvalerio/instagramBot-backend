@@ -1,16 +1,20 @@
 const puppeteer = require("puppeteer");
-const cnf = require("./config");
-const accounts = require("./accounts");
+// const cnf = require("./config");
+// const accounts = require("./accounts");
 
 async function bot(accounts) {
   for (let account of accounts) {
     // CHECK IF THE BOT IS ON FOR PARTICAL USER
 
-    if (account.settings.isBotOn) {
+    if (account.settings.isBotOn && account.isMemberShipAcctive) {
       console.log("BOT ACTIVE FOR => ", account.username);
       const browser = await puppeteer.launch({ headless: false });
       const page = await browser.newPage();
-      page.setViewport({ width: 800, height: 800 });
+      // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
+      page.setViewport({
+        width: Math.floor(Math.random() * 200 + 800),
+        height: Math.floor(Math.random() * 200 + 800),
+      });
       await page.goto("https://www.instagram.com/accounts/login/?hl=en");
       /*====================================
                           LOG IN TO ACCOUNT
@@ -117,6 +121,14 @@ async function bot(accounts) {
 
         if (account.settings.commentPost) {
           try {
+            //TODO:: GET ALL USERNAME OF THE PEOPLE THAT COMMENT ON THE POST
+            const allUserThatCommentedPost = await page.evaluate((e) => {
+              let a = document.querySelectorAll(`.Igw0E > a`);
+              return (a = Array.from(a).map((e) => {
+                return e.innerText;
+              }));
+            });
+
             await page.waitForSelector(".Ypffh");
             await page.waitFor(Math.random() * 4000 + 3500);
             await page.type(
@@ -126,8 +138,8 @@ async function bot(accounts) {
               ]
             );
             await page.waitFor(Math.random() * 4000 + 3500);
-            await page.keyboard.press("Enter"); // Enter Key
-            await page.waitFor(Math.random() * 4000 + 3500);
+            // await page.keyboard.press("Enter"); // Enter Key
+            await page.waitFor(Math.random() * 5000 + 3500);
           } catch (error) {
             console.log("Erro commenting", error);
           }

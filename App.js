@@ -22,44 +22,63 @@ mongoose.connect("mongodb://localhost:27017/instagramBot", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+app.get("/", (req, res) => {
+  res.send(`<h1>Welcome to IG-bot HOME-PAGE API</h1>`);
+});
 
 // CREATE ACCOUNT
 app.post("/api/createAccount", (req, res) => {
-  accountSchema.create({
-    username: req.body.username,
-    password: req.body.password,
-    hashTags: req.body.hashTags,
-    comments: req.body.comments,
-    activities: {
-      todayUnFollow: req.body.todayUnFollow,
-      todayLikesGiven: req.body.todayLikesGiven,
-      todayCommentsGiven: req.body.todayCommentsGiven,
-      accountsFollowedByBot: req.body.accountsFollowedByBot,
+  accountSchema.create(
+    {
+      username: req.body.username,
+      password: req.body.password,
+      //   hashTags: req.body.hashTags,
+      //   comments: req.body.comments,
+      //   activities: {
+      //     todayUnFollow: req.body.todayUnFollow,
+      //     todayLikesGiven: req.body.todayLikesGiven,
+      //     todayCommentsGiven: req.body.todayCommentsGiven,
+      //     accountsFollowedByBot: req.body.accountsFollowedByBot,
+      //   },
+      //   settings: {
+      //     maxDeilyLikes: {
+      //       type: req.body.maxDeilyLikes,
+      //     },
+      //     maxDeilyComment: {
+      //       type: req.body.maxDeilyComment,
+      //     },
+      //     maxDeilyFollow: {
+      //       type: req.body.maxDeilyFollow,
+      //     },
+      //     isBotOn: req.body.isBotOn,
+      //     do_unfollows: req.body.do_unfollows,
+      //     unfollow_after_days: req.body.unfollow_after_days,
+      //     likePost: req.body.likePost,
+      //     commentPost: req.body.commentPost,
+      //     followAccount: req.body.followAccount,
+      //   },
+      //   activities: {
+      //     todayLike: req.body.todayLike,
+      //     todayComment: req.body.todayComment,
+      //     todayFollow: req.body.todayFollow,
+      //   },
     },
-    settings: {
-      maxDeilyLikes: {
-        type: req.body.maxDeilyLikes,
-      },
-      maxDeilyComment: {
-        type: req.body.maxDeilyComment,
-      },
-      maxDeilyFollow: {
-        type: req.body.maxDeilyFollow,
-      },
-      isBotOn: req.body.isBotOn,
-      do_unfollows: req.body.do_unfollows,
-      unfollow_after_days: req.body.unfollow_after_days,
-      likePost: req.body.likePost,
-      commentPost: req.body.commentPost,
-      followAccount: req.body.followAccount,
-    },
-    activities: {
-      todayLike: req.body.todayLike,
-      todayComment: req.body.todayComment,
-      todayFollow: req.body.todayFollow,
-      activitiesBlocked: req.body.activitiesBlocked,
-    },
-  });
+    (err, account) => {
+      if (err) {
+        res.json({
+          code: 404,
+          message: err,
+          success: false,
+        });
+      } else {
+        res.json({
+          code: 200,
+          message: "account created",
+          success: true,
+        });
+      }
+    }
+  );
 });
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE

@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const accountSchema = new mongoose.Schema({
   username: String,
   password: String,
+  isMemberShipAcctive: {
+    type: Boolean,
+    default: false,
+  },
   hashTags: {
     type: Array,
     default: [],
@@ -10,6 +14,10 @@ const accountSchema = new mongoose.Schema({
   comments: {
     type: Array,
     default: [],
+    useDefaultsComment: {
+      type: Boolean,
+      default: false,
+    },
   },
   activities: {
     todayUnFollow: {
@@ -80,7 +88,6 @@ const accountSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    activitiesBlocked: Boolean,
   },
 });
 
