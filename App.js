@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 const accountSchema = require("./schema/userSchema");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -55,29 +56,130 @@ app.post("/api/checkemail", (req, res) => {
 
 // CREATE ACCOUNT
 app.post("/api/createAccount", async (req, res) => {
-  console.log(req.body);
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.memberPassword, salt);
 
-    console.log(req.body);
-    console.log(hashedPassword);
+    accountSchema.create(
+      {
+        memberEmail: req.body.memberEmail,
+        memberPassword: hashedPassword,
+      },
+      (err, created) => {
+        if (err) {
+          res.json({
+            code: 404,
+            message: `account not created`,
+            success: false,
+            error: err,
+          });
+        } else {
+          res.json({
+            code: 200,
+            message: `account  created`,
+            success: true,
+          });
+        }
+      }
+    );
   } catch (error) {
-    console.log(error);
+    res.json({
+      code: 404,
+      message: `Wrong username or password`,
+      success: false,
+    });
   }
 });
 
 app.post("/api/login", async (req, res) => {
   try {
-    accountSchema.find(
+    accountSchema.findOne(
       { memberEmail: req.body.memberEmail },
-      (err, foundAccound) => {
-        console.log(foundAccound);
+      async (err, foundAccound) => {
+        if (err) {
+          res.json({
+            code: 404,
+            message: `${req.body.memberEmail} or password does not match`,
+            success: false,
+            error: err,
+          });
+        } else {
+          if (
+            await bcrypt.compare(
+              req.body.memberPassword,
+              foundAccound.memberPassword
+            )
+          ) {
+            const accessToken = jwt.sign(
+              foundAccound.memberEmail,
+              process.env.ACCESS_TOKEN_SECRETE
+            );
+
+            res.json({
+              token: accessToken,
+              code: 200,
+              message: `Login Successfully`,
+              success: true,
+            });
+          } else {
+            res.json({
+              code: 404,
+              message: `${req.body.memberEmail} or password does not match`,
+              success: false,
+              // error: err,
+            });
+            console.log(`Wrong password`);
+          }
+        }
       }
     );
   } catch (error) {
-    res.send(error);
+    // res.send(error);
   }
+});
+
+app.post(`/api/verifytoken`, (req, res) => {
+  jwt.verify(req.body.token, process.env.ACCESS_TOKEN_SECRETE, (err, email) => {
+    if (err) {
+      console.log(err);
+      res.json({ code: 404, message: `user not found`, success: false });
+    } else {
+      accountSchema.findOne({ memberEmail: email }, (err, found) => {
+        console.log(found);
+        if (err) {
+          res.json({
+            code: 404,
+            message: `user not found`,
+            success: false,
+          });
+        } else {
+          res.json({
+            code: 200,
+            success: true,
+            activities: { todayLike: 0, todayComment: 0, todayFollow: 0 },
+            settings: {
+              maxDeilyLikes: found.settings.maxDeilyLikes,
+              maxDeilyComment: found.settings.maxDeilyComment,
+              maxDeilyFollow: found.settings.maxDeilyFollow,
+              isBotOn: found.settings.isBotOn,
+              do_unfollows: found.settings.do_unfollows,
+              unfollow_after_days: found.settings.unfollow_after_days,
+              likePost: found.settings.likePost,
+              commentPost: found.settings.commentPost,
+              followAccount: found.settings.followAccount,
+            },
+            instagramUsername: found.instagramUsername,
+            instagramPassword: found.instagramPassword,
+            isMemberShipAcctive: found.isMemberShipAcctive,
+            hashTags: found.hashTags,
+            comments: found.comments,
+            _id: found._id,
+            memberEmail: found.memberEmail,
+          });
+        }
+      });
+    }
+  });
 });
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
