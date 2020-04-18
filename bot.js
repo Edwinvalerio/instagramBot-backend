@@ -1,13 +1,20 @@
-const puppeteer = require("puppeteer");
-// const cnf = require("./config");
-// const accounts = require("./accounts");
+// const puppeteer = require("puppeteer");
+
+// FIXME: ADDIDED SOME MODULE TO RUN BOT UNDECTECTIVE FROM ->  https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth
+
+// it augments the installed puppeteer with plugin functionality
+const puppeteer = require("puppeteer-extra");
+
+// add stealth plugin and use defaults (all evasion techniques)
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 
 async function bot(accounts) {
   for (let account of accounts) {
     // CHECK IF THE BOT IS ON FOR PARTICAL USER
 
     if (account.settings.isBotOn && account.isMemberShipAcctive) {
-      console.log("BOT ACTIVE FOR => ", account.username);
+      console.log("BOT ACTIVE FOR => ", account.instagramUsername);
       const browser = await puppeteer.launch({ headless: false });
       const page = await browser.newPage();
       // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
@@ -20,8 +27,8 @@ async function bot(accounts) {
                           LOG IN TO ACCOUNT
               ====================================*/
       await page.waitForSelector('input[name="username"]');
-      await page.type('input[name="username"]', account.username);
-      await page.type('input[name="password"]', account.password);
+      await page.type('input[name="username"]', account.instagramUsername);
+      await page.type('input[name="password"]', account.instagramPassword);
       await page.waitFor(Math.random() * 4000 + 3500);
       await page.click('button[type="submit"]');
 
@@ -64,6 +71,7 @@ async function bot(accounts) {
           return await document.querySelector(".ZIAjV").innerText;
         });
         console.log("checking ====> ", accountUser);
+        await page.waitFor(Math.random() * 4000 + 3000);
         /*=============================
             FOLLOE ACCOUNT IF ENABLE BY USER
             =============================*/

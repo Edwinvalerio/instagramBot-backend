@@ -156,7 +156,11 @@ app.post(`/api/verifytoken`, (req, res) => {
           res.json({
             code: 200,
             success: true,
-            activities: { todayLike: 0, todayComment: 0, todayFollow: 0 },
+            activities: {
+              likesGiven: found.activities.likesGiven,
+              commentGiven: found.activities.commentGiven,
+              followByBot: found.activities.followByBot,
+            },
             settings: {
               maxDeilyLikes: found.settings.maxDeilyLikes,
               maxDeilyComment: found.settings.maxDeilyComment,
@@ -182,12 +186,34 @@ app.post(`/api/verifytoken`, (req, res) => {
   });
 });
 
+app.post(`/api/updateSettings`, (req, res) => {
+  accountSchema.findByIdAndUpdate(req.body._id, req.body, (err, updated) => {
+    if (err) {
+      console.log(err);
+      res.json({
+        code: 404,
+        message: `user not found`,
+        success: false,
+      });
+    } else {
+      console.log(updated);
+      res.json({
+        code: 200,
+        message: `Settings updated`,
+        success: true,
+      });
+    }
+  });
+
+  console.log("\nCHANGES RECEIVED");
+});
+
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
 // FIXME:
-// accountSchema.find((err, accounts) => {
-//   if (err) console.log(err);
-//   else bot(accounts);
-// });
+accountSchema.find((err, accounts) => {
+  if (err) console.log(err);
+  else bot(accounts);
+});
 
 app.listen(PORT, () => {
   console.log(`App runnint on port ${PORT}`);
