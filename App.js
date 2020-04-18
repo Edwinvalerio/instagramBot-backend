@@ -210,10 +210,10 @@ app.post(`/api/updateSettings`, (req, res) => {
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
 // FIXME:
-accountSchema.find((err, accounts) => {
-  if (err) console.log(err);
-  else bot(accounts);
-});
+// accountSchema.find((err, accounts) => {
+//   if (err) console.log(err);
+//   else bot(accounts);
+// });
 
 app.listen(PORT, () => {
   console.log(`App runnint on port ${PORT}`);
