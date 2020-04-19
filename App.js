@@ -160,6 +160,7 @@ app.post(`/api/verifytoken`, (req, res) => {
               likesGiven: found.activities.likesGiven,
               commentGiven: found.activities.commentGiven,
               followByBot: found.activities.followByBot,
+              accountsFollowedByBot: found.activities.accountsFollowedByBot,
             },
             settings: {
               maxDeilyLikes: found.settings.maxDeilyLikes,
@@ -177,6 +178,7 @@ app.post(`/api/verifytoken`, (req, res) => {
             isMemberShipAcctive: found.isMemberShipAcctive,
             hashTags: found.hashTags,
             comments: found.comments,
+            useDefaultsComment: found.useDefaultsComment,
             _id: found._id,
             memberEmail: found.memberEmail,
           });
@@ -210,10 +212,16 @@ app.post(`/api/updateSettings`, (req, res) => {
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
 // FIXME:
-// accountSchema.find((err, accounts) => {
-//   if (err) console.log(err);
-//   else bot(accounts);
-// });
+accountSchema.find((err, accounts) => {
+  // RUN BOT AS A INTERVAL FOR EVERY HOUR
+  if (err) {
+    console.log(err);
+  } else {
+    // setInterval(() => {
+    //   bot(accounts);
+    // }, 60000 * 60);
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`App runnint on port ${PORT}`);

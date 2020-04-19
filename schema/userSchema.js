@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const accountSchema = new mongoose.Schema({
+  isUserAndPasswordCorrect: {
+    type: Boolean,
+    default: false,
+  },
   instagramUsername: {
     type: String,
     default: "",
@@ -74,10 +78,10 @@ const accountSchema = new mongoose.Schema({
       "My strong, confident and powerful!",
       "Irresistible!",
     ],
-    useDefaultsComment: {
-      type: Boolean,
-      default: false,
-    },
+  },
+  useDefaultsComment: {
+    type: Boolean,
+    default: false,
   },
   activities: {
     followByBot: {
