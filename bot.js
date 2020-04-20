@@ -12,6 +12,15 @@ const accountSchema = require("./schema/userSchema");
 
 async function bot(accounts) {
   for (let account of accounts) {
+    // ========================================
+    const accountActivities = {
+      liked: false,
+      commented: false,
+      followed: false,
+      date: new Date().toLocaleDateString(),
+    };
+    // ========================================
+
     try {
       // CHECK IF THE BOT IS ON FOR PARTICAL USER
       if (account.settings.isBotOn && account.isMemberShipAcctive) {
@@ -65,6 +74,7 @@ async function bot(accounts) {
         allRecentPostLinks.splice(10);
 
         for (let postLink of allRecentPostLinks) {
+          await page.waitFor(Math.random() * 4000 + 3500);
           console.log(allRecentPostLinks);
           await page.goto(postLink);
           // GET ACCOUNT USERNAME
@@ -73,10 +83,19 @@ async function bot(accounts) {
           });
           console.log("checking ====> ", accountUser);
           await page.waitFor(Math.random() * 4000 + 3000);
+
           /*=============================
             FOLLOE ACCOUNT IF ENABLE BY USER
             =============================*/
-          if (account.settings.followAccount) {
+          const todayFollowGiven = account.activities.accountsFollowedByBot.filter(
+            (e) =>
+              e.date == new Date().toLocaleDateString() && e.followed == true
+          ); //THIS IS TOTAL OF FOLLOW GIVEN TODAY
+
+          if (
+            account.settings.followAccount &&
+            todayFollowGiven < account.settings.maxDeilyFollow
+          ) {
             try {
               // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
               const isFollowing = await page.evaluate(() => {
@@ -94,7 +113,11 @@ async function bot(accounts) {
                   console.log("following ===> ", accountUser);
                 });
 
-                // ADD USER TO THE OBJ THAT WILL BE LATER ON PUSH TO accountsFollowedByBot
+                // ADD TO ACTIVITY
+                accountActivities["followed"] = true;
+                accountActivities["username"] = accountUser;
+                // ADD TO ACTIVITY
+                await page.waitFor(Math.random() * 4000 + 3500);
               } else {
                 console.log("Already following ===> ", accountUser);
               }
@@ -108,7 +131,14 @@ async function bot(accounts) {
           /*=============================
             LIKE POST IF ENABLE BY USER SETTINGS
             =============================*/
-          if (account.settings.likePost) {
+          const todayLikedGiven = account.activities.accountsFollowedByBot.filter(
+            (e) => e.date == new Date().toLocaleDateString() && e.liked == true
+          ); //THIS IS TOTAL OF LIKE GIVEN TODAY
+
+          if (
+            account.settings.likePost &&
+            todayLikedGiven < account.settings.maxDeilyLikes
+          ) {
             try {
               // await page.waitForSelector(`[aria-label="Unlike"]`);
               await page.waitFor(Math.random() * 4000 + 3500);
@@ -122,6 +152,11 @@ async function bot(accounts) {
                 await page.waitFor(Math.random() * 4000 + 3500);
                 await page.click(".wpO6b");
 
+                // ADD TO ACTIVITY
+                accountActivities["liked"] = true;
+                accountActivities["username"] = accountUser;
+                // ADD TO ACTIVITY
+
                 await page.waitFor(Math.random() * 4000 + 3500);
                 console.log("Post Liked ==> ", postLink);
               } else {
@@ -131,14 +166,22 @@ async function bot(accounts) {
             } catch (error) {
               console.log(error);
             }
+            await page.waitFor(Math.random() * 4000 + 3500);
           }
           // let isLikeBlocked = document.querySelector('.piCib') ? true : false
 
           /*=============================
             COMMMENT POST IF ENABLE BY USER
             =============================*/
+          const todayCommentGiven = account.activities.accountsFollowedByBot.filter(
+            (e) =>
+              e.date == new Date().toLocaleDateString() && e.commented == true
+          ); //THIS IS TOTAL OF LIKE GIVEN TODAY
 
-          if (account.settings.commentPost) {
+          if (
+            account.settings.commentPost &&
+            todayCommentGiven < account.settings.maxDeilyComment
+          ) {
             try {
               //TODO:: GET ALL USERNAME OF THE PEOPLE THAT COMMENT ON THE POST
               const allUserThatCommentedPost = await page.evaluate((e) => {
@@ -157,7 +200,7 @@ async function bot(accounts) {
                 let defaultComment = "hey ";
                 for (
                   let i = 0;
-                  i <= Math.min(allUserThatCommentedPost.length, 10);
+                  i <= Math.min(allUserThatCommentedPost.length - 1, 5);
                   i++
                 ) {
                   let user = allUserThatCommentedPost[i];
@@ -179,10 +222,30 @@ async function bot(accounts) {
               await page.click(`form > button`);
               await page.waitFor(Math.random() * 4000 + 3500);
 
+              // ADD TO ACTIVITY
+              accountActivities["commented"] = true;
+              accountActivities["username"] = accountUser;
+              // ADD TO ACTIVITY
+
               await page.waitFor(Math.random() * 5000 + 3500);
             } catch (error) {
               console.log("Erro commenting", error);
             }
+            await page.waitFor(Math.random() * 4000 + 3500);
+          }
+
+          console.log("=================================");
+          console.log(accountActivities);
+          console.log("=================================");
+          if (accountActivities["username"]) {
+            accountSchema.findById(account._id, (err, found) => {
+              if (err) {
+                console.log(err);
+              } else {
+                found.activities.accountsFollowedByBot.push(accountActivities);
+                found.save();
+              }
+            });
           }
         }
 
@@ -193,6 +256,7 @@ async function bot(accounts) {
           account.username || account.memberEmail
         );
       }
+      await browser.close();
     } catch (error) {
       console.log(
         `error for account ${
@@ -200,6 +264,8 @@ async function bot(accounts) {
         }\nError: => ${error}`
       );
     }
+
+    // close browser after each account opertion
   }
   console.log("=================================");
   console.log("====== OPERATION COMPLETED ======");

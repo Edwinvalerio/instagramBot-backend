@@ -211,18 +211,28 @@ app.post(`/api/updateSettings`, (req, res) => {
 });
 
 // START BOT WILL ALL THE ACCOUNT IN THE DATABASE
-// FIXME:
+
+// RUN BOT AS A INTERVAL FOR EVERY HOUR  60000 * 60
+
+// setInterval(() => {
+//   accountSchema.find((err, accounts) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       bot(accounts);
+//     }
+//   });
+// }, 60000 * 60);
+
 accountSchema.find((err, accounts) => {
-  // RUN BOT AS A INTERVAL FOR EVERY HOUR
   if (err) {
     console.log(err);
   } else {
-    // setInterval(() => {
-    //   bot(accounts);
-    // }, 60000 * 60);
+    bot(accounts);
   }
 });
 
 app.listen(PORT, () => {
+  console.clear();
   console.log(`App runnint on port ${PORT}`);
 });

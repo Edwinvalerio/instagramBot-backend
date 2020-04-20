@@ -104,15 +104,15 @@ const accountSchema = new mongoose.Schema({
   settings: {
     maxDeilyLikes: {
       type: Number,
-      default: 100,
+      default: 10,
     },
     maxDeilyComment: {
       type: Number,
-      default: 100,
+      default: 10,
     },
     maxDeilyFollow: {
       type: Number,
-      default: 100,
+      default: 10,
     },
     isBotOn: {
       type: Boolean,
