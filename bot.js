@@ -71,9 +71,9 @@ async function bot(accounts) {
             (e) => e.href
           )
         );
-        allRecentPostLinks.splice(10);
 
-        for (let postLink of allRecentPostLinks) {
+        for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 10); i++) {
+          let postLink = allRecentPostLinks[i];
           await page.waitFor(Math.random() * 4000 + 3500);
           console.log(allRecentPostLinks);
           await page.goto(postLink);
@@ -90,7 +90,7 @@ async function bot(accounts) {
           const todayFollowGiven = account.activities.accountsFollowedByBot.filter(
             (e) =>
               e.date == new Date().toLocaleDateString() && e.followed == true
-          ); //THIS IS TOTAL OF FOLLOW GIVEN TODAY
+          ).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
 
           if (
             account.settings.followAccount &&
@@ -112,6 +112,19 @@ async function bot(accounts) {
                   //   TODO: ADD USER TO DATABASE
                   console.log("following ===> ", accountUser);
                 });
+                // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
+                await page.waitForSelector(`.piCib`);
+                const isAcctionBlocked = await page.evaluate(() => {
+                  return document.querySelector(`.piCib`) ? true : false;
+                });
+
+                if (isAcctionBlocked) {
+                  console.log(`ACTION BLOKED MOTHER FUCKER................`);
+                  await browser.close();
+                  break;
+                } else {
+                  console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
+                }
 
                 // ADD TO ACTIVITY
                 accountActivities["followed"] = true;
@@ -133,7 +146,7 @@ async function bot(accounts) {
             =============================*/
           const todayLikedGiven = account.activities.accountsFollowedByBot.filter(
             (e) => e.date == new Date().toLocaleDateString() && e.liked == true
-          ); //THIS IS TOTAL OF LIKE GIVEN TODAY
+          ).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
           if (
             account.settings.likePost &&
@@ -147,10 +160,29 @@ async function bot(accounts) {
                   ? true
                   : false;
               });
+
               if (!isPostLiked) {
                 // await page.waitForSelector(".wpO6b");
                 await page.waitFor(Math.random() * 4000 + 3500);
                 await page.click(".wpO6b");
+
+                // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
+                try {
+                  await page.waitForSelector(`.piCib`);
+                } catch (error) {
+                  console.log("Actions not block yet");
+                }
+                const isAcctionBlocked = await page.evaluate(() => {
+                  return document.querySelector(`.piCib`) ? true : false;
+                });
+
+                if (isAcctionBlocked) {
+                  console.log(`ACTION BLOKED MOTHER FUCKER................`);
+                  await browser.close();
+                  break;
+                } else {
+                  console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
+                }
 
                 // ADD TO ACTIVITY
                 accountActivities["liked"] = true;
@@ -176,7 +208,7 @@ async function bot(accounts) {
           const todayCommentGiven = account.activities.accountsFollowedByBot.filter(
             (e) =>
               e.date == new Date().toLocaleDateString() && e.commented == true
-          ); //THIS IS TOTAL OF LIKE GIVEN TODAY
+          ).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
           if (
             account.settings.commentPost &&
@@ -196,19 +228,26 @@ async function bot(accounts) {
               await page.waitFor(Math.random() * 4000 + 3500);
 
               // IF DEFAULT COMMENT IS ON
-              if (account.useDefaultsComment) {
-                let defaultComment = "hey ";
+              if (account.tagPeopleThatCommented) {
+                let comments_with_usernames_of_users_that_commented = "hey ";
                 for (
                   let i = 0;
                   i <= Math.min(allUserThatCommentedPost.length - 1, 5);
                   i++
                 ) {
                   let user = allUserThatCommentedPost[i];
-                  defaultComment += `@${user} `;
+                  comments_with_usernames_of_users_that_commented += `@${user} `;
                 }
 
-                defaultComment += " you are the best! 🙏";
-                await page.type(".Ypffh", defaultComment);
+                comments_with_usernames_of_users_that_commented += `${
+                  account.comments[
+                    Math.floor(Math.random() * account.comments.length - 1)
+                  ]
+                }`;
+                await page.type(
+                  ".Ypffh",
+                  comments_with_usernames_of_users_that_commented
+                );
                 // IF DEFAULT COMMENT IS OFF
               } else {
                 await page.type(
@@ -221,6 +260,20 @@ async function bot(accounts) {
               await page.waitFor(Math.random() * 4000 + 3500);
               await page.click(`form > button`);
               await page.waitFor(Math.random() * 4000 + 3500);
+
+              // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
+              await page.waitForSelector(`.piCib`);
+              const isAcctionBlocked = await page.evaluate(() => {
+                return document.querySelector(`.piCib`) ? true : false;
+              });
+
+              if (isAcctionBlocked) {
+                console.log(`ACTION BLOKED MOTHER FUCKER................`);
+                await browser.close();
+                break;
+              } else {
+                console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
+              }
 
               // ADD TO ACTIVITY
               accountActivities["commented"] = true;

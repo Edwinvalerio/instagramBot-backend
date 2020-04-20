@@ -178,7 +178,7 @@ app.post(`/api/verifytoken`, (req, res) => {
             isMemberShipAcctive: found.isMemberShipAcctive,
             hashTags: found.hashTags,
             comments: found.comments,
-            useDefaultsComment: found.useDefaultsComment,
+            tagPeopleThatCommented: found.tagPeopleThatCommented,
             _id: found._id,
             memberEmail: found.memberEmail,
           });
@@ -224,15 +224,18 @@ app.post(`/api/updateSettings`, (req, res) => {
 //   });
 // }, 60000 * 60);
 
-accountSchema.find((err, accounts) => {
-  if (err) {
-    console.log(err);
-  } else {
-    bot(accounts);
-  }
-});
+setInterval(() => {
+  accountSchema.find((err, accounts) => {
+    if (err) {
+      console.log(err);
+    } else {
+      bot(accounts);
+    }
+  });
+}, 60000 * 60);
 
 app.listen(PORT, () => {
   console.clear();
+  console.log("BOT WILL RUN EVERY 1 HOUR");
   console.log(`App runnint on port ${PORT}`);
 });

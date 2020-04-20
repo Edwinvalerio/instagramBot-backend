@@ -79,7 +79,7 @@ const accountSchema = new mongoose.Schema({
       "Irresistible!",
     ],
   },
-  useDefaultsComment: {
+  tagPeopleThatCommented: {
     type: Boolean,
     default: false,
   },
