@@ -48,12 +48,9 @@ async function bot(accounts) {
 
         await page.waitFor(Math.random() * 4000 + 3500);
 
-        const randomTag =
-          account.hashTags[Math.floor(Math.random() * account.hashTags.length)];
+        const randomTag = account.hashTags[Math.floor(Math.random() * account.hashTags.length)];
 
-        await page.goto(
-          `https://www.instagram.com/explore/tags/${randomTag}/?hl=en`
-        );
+        await page.goto(`https://www.instagram.com/explore/tags/${randomTag}/?hl=en`);
 
         //  scroll page down 3 times
         await page.evaluate(() => {
@@ -65,12 +62,7 @@ async function bot(accounts) {
         });
 
         // GET ALL RECENTS POST
-        let allRecentPostLinks = await page.evaluate(() =>
-          Array.from(
-            document.querySelectorAll("article :nth-child(2) > a"),
-            (e) => e.href
-          )
-        );
+        let allRecentPostLinks = await page.evaluate(() => Array.from(document.querySelectorAll("article :nth-child(2) > a"), (e) => e.href));
 
         for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 10); i++) {
           let postLink = allRecentPostLinks[i];
@@ -87,21 +79,13 @@ async function bot(accounts) {
           /*=============================
             FOLLOE ACCOUNT IF ENABLE BY USER
             =============================*/
-          const todayFollowGiven = account.activities.accountsFollowedByBot.filter(
-            (e) =>
-              e.date == new Date().toLocaleDateString() && e.followed == true
-          ).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
+          const todayFollowGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.followed == true).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
 
-          if (
-            account.settings.followAccount &&
-            todayFollowGiven < account.settings.maxDeilyFollow
-          ) {
+          if (account.settings.followAccount && todayFollowGiven < account.settings.maxDeilyFollow) {
             try {
               // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
               const isFollowing = await page.evaluate(() => {
-                return (
-                  document.querySelector(".oW_lN").innerText == "Following"
-                );
+                return document.querySelector(".oW_lN").innerText == "Following";
               });
 
               // IF NOT FOLLOWING USER (CLICK FOLLOW)
@@ -144,21 +128,14 @@ async function bot(accounts) {
           /*=============================
             LIKE POST IF ENABLE BY USER SETTINGS
             =============================*/
-          const todayLikedGiven = account.activities.accountsFollowedByBot.filter(
-            (e) => e.date == new Date().toLocaleDateString() && e.liked == true
-          ).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
+          const todayLikedGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.liked == true).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
-          if (
-            account.settings.likePost &&
-            todayLikedGiven < account.settings.maxDeilyLikes
-          ) {
+          if (account.settings.likePost && todayLikedGiven < account.settings.maxDeilyLikes) {
             try {
               // await page.waitForSelector(`[aria-label="Unlike"]`);
               await page.waitFor(Math.random() * 4000 + 3500);
               const isPostLiked = await page.evaluate((e) => {
-                return document.querySelector(`[aria-label="Unlike"]`)
-                  ? true
-                  : false;
+                return document.querySelector(`[aria-label="Unlike"]`) ? true : false;
               });
 
               if (!isPostLiked) {
@@ -205,15 +182,9 @@ async function bot(accounts) {
           /*=============================
             COMMMENT POST IF ENABLE BY USER
             =============================*/
-          const todayCommentGiven = account.activities.accountsFollowedByBot.filter(
-            (e) =>
-              e.date == new Date().toLocaleDateString() && e.commented == true
-          ).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
+          const todayCommentGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.commented == true).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
-          if (
-            account.settings.commentPost &&
-            todayCommentGiven < account.settings.maxDeilyComment
-          ) {
+          if (account.settings.commentPost && todayCommentGiven < account.settings.maxDeilyComment) {
             try {
               //TODO:: GET ALL USERNAME OF THE PEOPLE THAT COMMENT ON THE POST
               const allUserThatCommentedPost = await page.evaluate((e) => {
@@ -230,36 +201,25 @@ async function bot(accounts) {
               // IF DEFAULT COMMENT IS ON
               if (account.tagPeopleThatCommented) {
                 let comments_with_usernames_of_users_that_commented = "hey ";
-                for (
-                  let i = 0;
-                  i <= Math.min(allUserThatCommentedPost.length - 1, 5);
-                  i++
-                ) {
+                for (let i = 0; i <= Math.min(allUserThatCommentedPost.length - 1, 5); i++) {
                   let user = allUserThatCommentedPost[i];
                   comments_with_usernames_of_users_that_commented += `@${user} `;
                 }
 
-                comments_with_usernames_of_users_that_commented += `${
-                  account.comments[
-                    Math.floor(Math.random() * account.comments.length - 1)
-                  ]
-                }`;
-                await page.type(
-                  ".Ypffh",
-                  comments_with_usernames_of_users_that_commented
-                );
+                comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length - 1)]}`;
+                await page.type(".Ypffh", comments_with_usernames_of_users_that_commented);
                 // IF DEFAULT COMMENT IS OFF
               } else {
-                await page.type(
-                  ".Ypffh",
-                  account.comments[
-                    Math.floor(Math.random() * account.comments.length) - 1
-                  ]
-                );
+                await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length) - 1]);
               }
               await page.waitFor(Math.random() * 4000 + 3500);
               await page.click(`form > button`);
               await page.waitFor(Math.random() * 4000 + 3500);
+
+              // ADD TO ACTIVITY
+              accountActivities["commented"] = true;
+              accountActivities["username"] = accountUser;
+              // ADD TO ACTIVITY
 
               // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
               await page.waitForSelector(`.piCib`);
@@ -274,11 +234,6 @@ async function bot(accounts) {
               } else {
                 console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
               }
-
-              // ADD TO ACTIVITY
-              accountActivities["commented"] = true;
-              accountActivities["username"] = accountUser;
-              // ADD TO ACTIVITY
 
               await page.waitFor(Math.random() * 5000 + 3500);
             } catch (error) {
@@ -304,20 +259,12 @@ async function bot(accounts) {
 
         await page.waitFor(Math.random() * 4000 + 3500);
       } else {
-        console.log(
-          "BOT is OFF or MEMMBERSHIP is not ACTIVE for ===> ",
-          account.username || account.memberEmail
-        );
+        console.log("BOT is OFF or MEMMBERSHIP is not ACTIVE for ===> ", account.username || account.memberEmail);
       }
-      await browser.close();
     } catch (error) {
-      console.log(
-        `error for account ${
-          account.instagramUsername || account.memberEmail
-        }\nError: => ${error}`
-      );
+      console.log(`error for account ${account.instagramUsername || account.memberEmail}\nError: => ${error}`);
     }
-
+    await browser.close();
     // close browser after each account opertion
   }
   console.log("=================================");
