@@ -184,7 +184,7 @@ app.post(`/api/updateSettings`, (req, res) => {
       console.log(updated);
       res.json({
         code: 200,
-        message: `Settings updated`,
+        message: `Changes applied. please note changes can take 1+ hrs`,
         success: true,
       });
     }
