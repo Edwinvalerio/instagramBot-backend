@@ -256,6 +256,8 @@ async function bot(accounts) {
             });
           }
         }
+        //CLOSE BROWSER
+        await browser.close();
 
         await page.waitFor(Math.random() * 4000 + 3500);
       } else {
@@ -264,7 +266,7 @@ async function bot(accounts) {
     } catch (error) {
       console.log(`error for account ${account.instagramUsername || account.memberEmail}\nError: => ${error}`);
     }
-    await browser.close();
+
     // close browser after each account opertion
   }
   console.log("=================================");

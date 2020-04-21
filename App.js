@@ -136,35 +136,39 @@ app.post(`/api/verifytoken`, (req, res) => {
             success: false,
           });
         } else {
-          res.json({
-            code: 200,
-            success: true,
-            activities: {
-              likesGiven: found.activities.likesGiven,
-              commentGiven: found.activities.commentGiven,
-              followByBot: found.activities.followByBot,
-              accountsFollowedByBot: found.activities.accountsFollowedByBot,
-            },
-            settings: {
-              maxDeilyLikes: found.settings.maxDeilyLikes,
-              maxDeilyComment: found.settings.maxDeilyComment,
-              maxDeilyFollow: found.settings.maxDeilyFollow,
-              isBotOn: found.settings.isBotOn,
-              do_unfollows: found.settings.do_unfollows,
-              unfollow_after_days: found.settings.unfollow_after_days,
-              likePost: found.settings.likePost,
-              commentPost: found.settings.commentPost,
-              followAccount: found.settings.followAccount,
-            },
-            instagramUsername: found.instagramUsername,
-            instagramPassword: found.instagramPassword,
-            isMemberShipAcctive: found.isMemberShipAcctive,
-            hashTags: found.hashTags,
-            comments: found.comments,
-            tagPeopleThatCommented: found.tagPeopleThatCommented,
-            _id: found._id,
-            memberEmail: found.memberEmail,
-          });
+          try {
+            res.json({
+              code: 200,
+              success: true,
+              activities: {
+                likesGiven: found.activities.likesGiven,
+                commentGiven: found.activities.commentGiven,
+                followByBot: found.activities.followByBot,
+                accountsFollowedByBot: found.activities.accountsFollowedByBot,
+              },
+              settings: {
+                maxDeilyLikes: found.settings.maxDeilyLikes,
+                maxDeilyComment: found.settings.maxDeilyComment,
+                maxDeilyFollow: found.settings.maxDeilyFollow,
+                isBotOn: found.settings.isBotOn,
+                do_unfollows: found.settings.do_unfollows,
+                unfollow_after_days: found.settings.unfollow_after_days,
+                likePost: found.settings.likePost,
+                commentPost: found.settings.commentPost,
+                followAccount: found.settings.followAccount,
+              },
+              instagramUsername: found.instagramUsername,
+              instagramPassword: found.instagramPassword,
+              isMemberShipAcctive: found.isMemberShipAcctive,
+              hashTags: found.hashTags,
+              comments: found.comments,
+              tagPeopleThatCommented: found.tagPeopleThatCommented,
+              _id: found._id,
+              memberEmail: found.memberEmail,
+            });
+          } catch (error) {
+            res.json({ err: error });
+          }
         }
       });
     }
