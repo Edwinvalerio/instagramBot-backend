@@ -111,7 +111,7 @@ const accountSchema = new mongoose.Schema({
     },
     do_unfollows: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     unfollow_after_days: {
       type: Number,

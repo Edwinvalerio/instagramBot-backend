@@ -17,12 +17,17 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect("mongodb://localhost:27017/instagramBot", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+
+
+
 // mongoose.set("useCreateIndex", true);
 
 app.get("/", (req, res) => {
@@ -201,15 +206,15 @@ app.post(`/api/updateSettings`, (req, res) => {
 
 // RUN BOT AS A INTERVAL FOR EVERY HOUR  60000 * 60
 
-setInterval(() => {
-  accountSchema.find((err, accounts) => {
-    if (err) {
-      console.log(err);
-    } else {
-      bot(accounts);
-    }
-  });
-}, 60000 * 60);
+// setInterval(() => {
+accountSchema.find((err, accounts) => {
+  if (err) {
+    console.log(err);
+  } else {
+    bot(accounts);
+  }
+});
+// }, 60000 * 60);
 
 app.listen(PORT, () => {
   console.clear();
