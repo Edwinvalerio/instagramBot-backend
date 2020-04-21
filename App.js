@@ -25,9 +25,6 @@ mongoose.connect("mongodb://localhost:27017/instagramBot", {
   useUnifiedTopology: true,
 });
 
-
-
-
 // mongoose.set("useCreateIndex", true);
 
 app.get("/", (req, res) => {
@@ -133,7 +130,7 @@ app.post(`/api/verifytoken`, (req, res) => {
       res.json({ code: 404, message: `user not found`, success: false });
     } else {
       accountSchema.findOne({ memberEmail: email }, (err, found) => {
-        console.log(found);
+        // console.log(found);
         if (err) {
           res.json({
             code: 404,
@@ -190,7 +187,7 @@ app.post(`/api/updateSettings`, (req, res) => {
         success: false,
       });
     } else {
-      console.log(updated);
+      // console.log(updated);
       res.json({
         code: 200,
         message: `Changes applied. please note changes can take 1+ hrs`,
@@ -206,15 +203,15 @@ app.post(`/api/updateSettings`, (req, res) => {
 
 // RUN BOT AS A INTERVAL FOR EVERY HOUR  60000 * 60
 
-// setInterval(() => {
-accountSchema.find((err, accounts) => {
-  if (err) {
-    console.log(err);
-  } else {
-    bot(accounts);
-  }
-});
-// }, 60000 * 60);
+setInterval(() => {
+  accountSchema.find((err, accounts) => {
+    if (err) {
+      console.log(err);
+    } else {
+      bot(accounts);
+    }
+  });
+}, 60000 * 60);
 
 app.listen(PORT, () => {
   console.clear();

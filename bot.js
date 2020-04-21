@@ -12,6 +12,12 @@ const accountSchema = require("./schema/userSchema");
 
 async function bot(accounts) {
   for (let account of accounts) {
+    // RATIAL FUNCTION TO VERY THE FOLLOW
+    const ratial = () => {
+      // CHANGE THE 0.5  TO THE AMMOUNT OF PERCENTAGE OR RATIOL, HIGHEST THE NUMBER THE HIGHER IS THE PERCENTAGE TO TAKE THE ACTION
+      return Math.random() < 0.5;
+    };
+
     // ========================================
     const accountActivities = {
       liked: false,
@@ -23,9 +29,10 @@ async function bot(accounts) {
 
     try {
       // CHECK IF THE BOT IS ON FOR PARTICAL USER
+
       if (account.settings.isBotOn && account.isMemberShipAcctive) {
         console.log("BOT ACTIVE FOR => ", account.instagramUsername);
-        const browser = await puppeteer.launch({ headless: false });
+        const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
         page.setViewport({
@@ -42,53 +49,47 @@ async function bot(accounts) {
         await page.waitFor(Math.random() * 4000 + 3500);
         await page.click('button[type="submit"]');
 
-
         // ===============================================================
 
         // IF UNFOLLOW SETTING IS ON : START UNFLOWING USERS
-        const today = new Date().getDay()
-        const monday = 2
-        const all_account_to_unfollow = account.activities.accountsFollowedByBot.filter(e => {
-          return e.followed == true && e.username
-        })
+        // const today = new Date().getDay();
+        // const monday = 2;
+        // const all_account_to_unfollow = account.activities.accountsFollowedByBot.filter((e) => {
+        //   return e.followed == true;
+        // });
 
+        // await page.waitFor(Math.random() * 4000 + 3500);
+        // try {
+        //   if (account.settings.do_unfollows && today == monday) {
+        //     for (let i = 0; i < all_account_to_unfollow.length - 1; i++) {
+        //       console.log(`==================    unfollow users        =========================`);
+        //       const user_to_unfollow = all_account_to_unfollow[i];
+        //       await page.goto(`https://www.instagram.com/${user_to_unfollow.username}`);
+        //       await page.waitForSelector(`.glyphsSpriteFriend_Follow`);
+        //       await page.click(`.glyphsSpriteFriend_Follow`);
 
-        try {
-          if (account.settings.do_unfollows && today == monday) {
-            for (let i = 0; i < all_account_to_unfollow.length - 1; i++) {
-              const user_to_unfollow = all_account_to_unfollow[i]
-              await page.goto(`https://www.instagram.com/${user_to_unfollow}`)
-              await page.waitForSelector(`.glyphsSpriteFriend_Follow`)
-              await page.click(`.glyphsSpriteFriend_Follow`)
-
-              // click unfollow 
-              await page.evaluate(e => {
-                document.querySelectorAll(`.aOOlW`)[0].click()
-              })
-              await page.waitFor(Math.random() * 4000 + 3000)
-              accountSchema.findById(account._id, (err, found) => {
-                if (err) {
-                  console.log(`error finding => ${account.instagramUsername || account.memberEmail} to delete following`)
-                } else {
-                  found.user_to_unfollow.followed = false
-                  found.save()
-                }
-              })
-              await page.waitFor(Math.random() * 4000 + 3000)
-            }
-          }
-        } catch (error) {
-          console.log('error unfollowing')
-          console.log(error)
-        }
+        //       // click unfollow
+        //       await page.evaluate(() => {
+        //         document.querySelectorAll(`.aOOlW`)[0].click();
+        //       });
+        //       await page.waitFor(Math.random() * 4000 + 3000);
+        //       accountSchema.findById(account._id, (err, found) => {
+        //         if (err) {
+        //           console.log(`error finding => ${account.instagramUsername || account.memberEmail} to delete following`);
+        //         } else {
+        //           found.activities.accountsFollowedByBot[i].followed = false;
+        //           found.save();
+        //         }
+        //       });
+        //       await page.waitFor(Math.random() * 4000 + 3000);
+        //     }
+        //   }
+        // } catch (error) {
+        //   console.log("error unfollowing");
+        //   console.log(error);
+        // }
 
         // ===============================================================
-
-
-
-
-
-
 
         /*====================================
                           GRAB A RANDOM HASHTAG
@@ -112,10 +113,11 @@ async function bot(accounts) {
         // GET ALL RECENTS POST
         let allRecentPostLinks = await page.evaluate(() => Array.from(document.querySelectorAll("article :nth-child(2) > a"), (e) => e.href));
 
-        for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 10); i++) {
+        // GET THE LAST 15 POST  FROM THE HASGTAG
+        for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 15); i++) {
           let postLink = allRecentPostLinks[i];
           await page.waitFor(Math.random() * 4000 + 3500);
-          console.log(allRecentPostLinks);
+          // console.log(allRecentPostLinks);
           await page.goto(postLink);
           // GET ACCOUNT USERNAME
           const accountUser = await page.evaluate(async () => {
@@ -129,7 +131,7 @@ async function bot(accounts) {
             =============================*/
           const todayFollowGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.followed == true).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
 
-          if (account.settings.followAccount && todayFollowGiven < account.settings.maxDeilyFollow) {
+          if (account.settings.followAccount && todayFollowGiven < account.settings.maxDeilyFollow && ratial()) {
             try {
               // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
               const isFollowing = await page.evaluate(() => {
@@ -178,7 +180,7 @@ async function bot(accounts) {
             =============================*/
           const todayLikedGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.liked == true).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
-          if (account.settings.likePost && todayLikedGiven < account.settings.maxDeilyLikes) {
+          if (account.settings.likePost && todayLikedGiven < account.settings.maxDeilyLikes && ratial()) {
             try {
               // await page.waitForSelector(`[aria-label="Unlike"]`);
               await page.waitFor(Math.random() * 4000 + 3500);
@@ -232,7 +234,7 @@ async function bot(accounts) {
             =============================*/
           const todayCommentGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.commented == true).length; //THIS IS TOTAL OF LIKE GIVEN TODAY
 
-          if (account.settings.commentPost && todayCommentGiven < account.settings.maxDeilyComment) {
+          if (account.settings.commentPost && todayCommentGiven < account.settings.maxDeilyComment && ratial()) {
             try {
               //TODO:: GET ALL USERNAME OF THE PEOPLE THAT COMMENT ON THE POST
               const allUserThatCommentedPost = await page.evaluate((e) => {
