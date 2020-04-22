@@ -104,23 +104,31 @@ app.post("/api/login", async (req, res) => {
           error: err,
         });
       } else {
-        if (await bcrypt.compare(req.body.memberPassword, foundAccound.memberPassword)) {
-          const accessToken = jwt.sign(foundAccound.memberEmail, process.env.ACCESS_TOKEN_SECRETE);
+        try {
+          const user = { user: foundAccound.memberEmail };
+          const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRETE, {
+            expiresIn: "20m"
+          });
+          if (await bcrypt.compareSync(req.body.memberPassword, foundAccound.memberPassword)) {
 
-          res.json({
-            token: accessToken,
-            code: 200,
-            message: `Login Successfully`,
-            success: true,
-          });
-        } else {
-          res.json({
-            code: 404,
-            message: `${req.body.memberEmail} or password does not match`,
-            success: false,
-            // error: err,
-          });
-          console.log(`Wrong password`);
+
+            res.json({
+              token: accessToken,
+              code: 200,
+              message: `Login Successfully`,
+              success: true,
+            });
+          } else {
+            res.json({
+              code: 404,
+              message: `${req.body.memberEmail} or password does not match`,
+              success: false,
+              // error: err,
+            });
+            console.log(`Wrong password`);
+          }
+        } catch (error) {
+          console.log('error trying jwt  or bcrypt  ==> ', error)
         }
       }
     });
