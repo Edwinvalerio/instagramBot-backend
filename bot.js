@@ -11,6 +11,8 @@ puppeteer.use(StealthPlugin());
 const accountSchema = require("./schema/userSchema");
 
 async function bot(accounts) {
+
+
   for (let account of accounts) {
     // RATIAL FUNCTION TO VERY THE FOLLOW
     const ratial = () => {
@@ -191,7 +193,7 @@ async function bot(accounts) {
             try {
               // await page.waitForSelector(`[aria-label="Unlike"]`);
               await page.waitFor(Math.random() * 4000 + 3500);
-              const isPostLiked = await page.evaluate((e) => {
+              const isPostLiked = await page.evaluate(() => {
                 return document.querySelector(`[aria-label="Unlike"]`) ? true : false;
               });
 
@@ -265,10 +267,10 @@ async function bot(accounts) {
                 }
 
                 comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length - 1)]}`;
-                await page.type(".Ypffh", comments_with_usernames_of_users_that_commented);
+                await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                 // IF DEFAULT COMMENT IS OFF
               } else {
-                await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length) - 1]);
+                await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
               }
               await page.waitFor(Math.random() * 4000 + 3500);
               await page.click(`form > button`);
@@ -336,13 +338,17 @@ async function bot(accounts) {
   console.log("====== OPERATION COMPLETED ======");
   console.log("======== NEXT RUN IN 1HR ========");
   console.log("=================================");
+
+
+  // setTimeout(() => {
+  //   accountSchema.find((err, allAccounts) => {
+  //     if (err) {
+  //       console.log(err);
+  //     } else {
+  //       bot(allAccounts);
+  //     }
+  //   });
+  // }, 60000 * 60);
 }
 
 module.exports = bot;
-
-// const r = document.querySelectorAll(`article:nth-child(2) > div  div a`);
-// for (let i of r) {
-//   console.log(i.href);
-// }
-
-// blocked window class = .piCib

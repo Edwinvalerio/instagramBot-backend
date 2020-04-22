@@ -25,8 +25,9 @@ const PORT = process.env.PORT || 5000;
 
 mongoose.connect("mongodb://localhost:27017/instagramBot", {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  useUnifiedTopology: true
 });
+
 
 // mongoose.set("useCreateIndex", true);
 
