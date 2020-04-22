@@ -7,6 +7,9 @@ const accountSchema = require("./schema/userSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
+app.set('etag', false); // turn off ; //TO AVOID GETTING THE 304 CODE   -> https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
+
 require("dotenv").config();
 
 app.use(express.json());
@@ -79,6 +82,7 @@ app.post("/api/createAccount", async (req, res) => {
       }
     );
   } catch (error) {
+    console.log(error)
     res.json({
       code: 404,
       message: `Wrong username or password`,
@@ -91,6 +95,7 @@ app.post("/api/login", async (req, res) => {
   try {
     accountSchema.findOne({ memberEmail: req.body.memberEmail }, async (err, foundAccound) => {
       if (err) {
+        console.log(err)
         res.json({
           code: 404,
           message: `${req.body.memberEmail} or password does not match`,
@@ -119,7 +124,7 @@ app.post("/api/login", async (req, res) => {
       }
     });
   } catch (error) {
-    // res.send(error);
+    console.log(error)
   }
 });
 
@@ -169,6 +174,7 @@ app.post(`/api/verifytoken`, (req, res) => {
               memberEmail: found.memberEmail,
             });
           } catch (error) {
+            console.log(error)
             res.json({ err: error });
           }
         }

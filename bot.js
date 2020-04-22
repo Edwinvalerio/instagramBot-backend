@@ -146,10 +146,17 @@ async function bot(accounts) {
                   //   TODO: ADD USER TO DATABASE
                   console.log("following ===> ", accountUser);
                 });
+
+
                 // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-                await page.waitForSelector(`.piCib`);
+                await page.waitFor((Math.random() * 3000) + 3000)
                 const isAcctionBlocked = await page.evaluate(() => {
-                  return document.querySelector(`.piCib`) ? true : false;
+                  try {
+                    return document.querySelector(`.piCib`) ? true : false;
+                  } catch (error) {
+                    console.log(error)
+                    return false
+                  }
                 });
 
                 if (isAcctionBlocked) {
@@ -194,13 +201,14 @@ async function bot(accounts) {
                 await page.click(".wpO6b");
 
                 // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-                try {
-                  await page.waitForSelector(`.piCib`);
-                } catch (error) {
-                  console.log("Actions not block yet");
-                }
+                await page.waitFor((Math.random() * 3000) + 3000)
                 const isAcctionBlocked = await page.evaluate(() => {
-                  return document.querySelector(`.piCib`) ? true : false;
+                  try {
+                    return document.querySelector(`.piCib`) ? true : false;
+                  } catch (error) {
+                    console.log(error)
+                    return false
+                  }
                 });
 
                 if (isAcctionBlocked) {
@@ -272,9 +280,14 @@ async function bot(accounts) {
               // ADD TO ACTIVITY
 
               // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-              await page.waitForSelector(`.piCib`);
+              await page.waitFor((Math.random() * 3000) + 3000)
               const isAcctionBlocked = await page.evaluate(() => {
-                return document.querySelector(`.piCib`) ? true : false;
+                try {
+                  return document.querySelector(`.piCib`) ? true : false;
+                } catch (error) {
+                  console.log(error)
+                  return false
+                }
               });
 
               if (isAcctionBlocked) {
