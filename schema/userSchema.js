@@ -24,7 +24,7 @@ const accountSchema = new mongoose.Schema({
   },
   isMemberShipAcctive: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   hashTags: {
     type: Array,

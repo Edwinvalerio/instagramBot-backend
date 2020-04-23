@@ -62,7 +62,7 @@ app.post("/api/createAccount", async (req, res) => {
 
     accountSchema.create(
       {
-        memberEmail: req.body.memberEmail,
+        memberEmail: req.body.memberEmail.toLowerCase(),
         memberPassword: hashedPassword,
       },
       (err, created) => {

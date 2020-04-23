@@ -17,7 +17,7 @@ async function bot(accounts) {
     // RATIAL FUNCTION TO VERY THE FOLLOW
     const ratial = () => {
       // CHANGE THE 0.5  TO THE AMMOUNT OF PERCENTAGE OR RATIOL, HIGHEST THE NUMBER THE HIGHER IS THE PERCENTAGE TO TAKE THE ACTION
-      return Math.random() < 0.5;
+      return Math.random() < 0.3;
     };
 
     // ========================================
