@@ -105,7 +105,7 @@ app.post("/api/login", async (req, res) => {
         });
       } else {
         try {
-          const user = { user: foundAccound.memberEmail };
+          const user = { user: req.body.memberEmail };
           const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRETE, {
             expiresIn: "20m"
           });
