@@ -105,8 +105,8 @@ app.post("/api/login", async (req, res) => {
         });
       } else {
         try {
-          const user = { user: req.body.memberEmail };
-          const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRETE, {
+          const user = { userEmail: req.body.memberEmail };
+          const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRETE, {
             expiresIn: "20m"
           });
           if (await bcrypt.compareSync(req.body.memberPassword, foundAccound.memberPassword)) {
@@ -138,12 +138,13 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post(`/api/verifytoken`, (req, res) => {
-  jwt.verify(req.body.token, process.env.ACCESS_TOKEN_SECRETE, (err, email) => {
+  jwt.verify(req.body.token, process.env.ACCESS_TOKEN_SECRETE, (err, tokenData) => {
     if (err) {
-
+		
       res.json({ code: 404, message: `user not found`, success: false });
     } else {
-      accountSchema.findOne({ memberEmail: email }, (err, found) => {
+console.log(tokenData)
+      accountSchema.findOne({ memberEmail: tokenData.userEmail}, (err, found) => {
         // console.log(found);
         if (err) {
           res.json({
