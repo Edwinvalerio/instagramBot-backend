@@ -11,13 +11,11 @@ puppeteer.use(StealthPlugin());
 const accountSchema = require("./schema/userSchema");
 
 async function bot(accounts) {
-
-
   for (let account of accounts) {
     // RATIAL FUNCTION TO VERY THE FOLLOW
     const ratial = () => {
       // CHANGE THE 0.5  TO THE AMMOUNT OF PERCENTAGE OR RATIOL, HIGHEST THE NUMBER THE HIGHER IS THE PERCENTAGE TO TAKE THE ACTION
-      return Math.random() < 0.5;
+      return Math.random() < 0.4;
     };
 
     // ========================================
@@ -149,15 +147,14 @@ async function bot(accounts) {
                   console.log("following ===> ", accountUser);
                 });
 
-
                 // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-                await page.waitFor((Math.random() * 3000) + 3000)
+                await page.waitFor(Math.random() * 3000 + 3000);
                 const isAcctionBlocked = await page.evaluate(() => {
                   try {
                     return document.querySelector(`.piCib`) ? true : false;
                   } catch (error) {
-                    console.log(error)
-                    return false
+                    console.log(error);
+                    return false;
                   }
                 });
 
@@ -203,13 +200,13 @@ async function bot(accounts) {
                 await page.click(".wpO6b");
 
                 // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-                await page.waitFor((Math.random() * 3000) + 3000)
+                await page.waitFor(Math.random() * 3000 + 3000);
                 const isAcctionBlocked = await page.evaluate(() => {
                   try {
                     return document.querySelector(`.piCib`) ? true : false;
                   } catch (error) {
-                    console.log(error)
-                    return false
+                    console.log(error);
+                    return false;
                   }
                 });
 
@@ -271,10 +268,10 @@ async function bot(accounts) {
                   await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                   // IF DEFAULT COMMENT IS OFF
                 } else {
-                  await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length) - 1]);
+                  await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                 }
               } catch (error) {
-                console.log('error tryinh to comment. plese see error msg below\n\n', error)
+                console.log("error tryinh to comment. plese see error msg below\n\n", error);
               }
               await page.waitFor(Math.random() * 4000 + 3500);
               await page.click(`form > button`);
@@ -286,13 +283,13 @@ async function bot(accounts) {
               // ADD TO ACTIVITY
 
               // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-              await page.waitFor((Math.random() * 3000) + 3000)
+              await page.waitFor(Math.random() * 3000 + 3000);
               const isAcctionBlocked = await page.evaluate(() => {
                 try {
                   return document.querySelector(`.piCib`) ? true : false;
                 } catch (error) {
-                  console.log(error)
-                  return false
+                  console.log(error);
+                  return false;
                 }
               });
 
@@ -342,7 +339,6 @@ async function bot(accounts) {
   console.log("====== OPERATION COMPLETED ======");
   console.log("======== NEXT RUN IN 1HR ========");
   console.log("=================================");
-
 
   setTimeout(() => {
     accountSchema.find((err, allAccounts) => {
