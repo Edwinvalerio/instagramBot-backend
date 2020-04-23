@@ -140,7 +140,7 @@ app.post("/api/login", async (req, res) => {
 app.post(`/api/verifytoken`, (req, res) => {
   jwt.verify(req.body.token, process.env.ACCESS_TOKEN_SECRETE, (err, email) => {
     if (err) {
-      console.log(err);
+
       res.json({ code: 404, message: `user not found`, success: false });
     } else {
       accountSchema.findOne({ memberEmail: email }, (err, found) => {
@@ -218,15 +218,15 @@ app.post(`/api/updateSettings`, (req, res) => {
 
 // RUN BOT AS A INTERVAL FOR EVERY HOUR  60000 * 60
 
-setInterval(() => {
-  accountSchema.find((err, accounts) => {
-    if (err) {
-      console.log(err);
-    } else {
-      bot(accounts);
-    }
-  });
-}, 60000 * 60);
+// setInterval(() => {
+accountSchema.find((err, accounts) => {
+  if (err) {
+    console.log(err);
+  } else {
+    bot(accounts);
+  }
+});
+// }, 60000 * 60);
 
 app.listen(PORT, () => {
   console.clear();

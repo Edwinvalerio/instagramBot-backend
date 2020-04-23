@@ -17,7 +17,7 @@ async function bot(accounts) {
     // RATIAL FUNCTION TO VERY THE FOLLOW
     const ratial = () => {
       // CHANGE THE 0.5  TO THE AMMOUNT OF PERCENTAGE OR RATIOL, HIGHEST THE NUMBER THE HIGHER IS THE PERCENTAGE TO TAKE THE ACTION
-      return Math.random() < 0.3;
+      return Math.random() < 0.5;
     };
 
     // ========================================
@@ -258,19 +258,23 @@ async function bot(accounts) {
               await page.waitForSelector(".Ypffh");
               await page.waitFor(Math.random() * 4000 + 3500);
 
-              // IF DEFAULT COMMENT IS ON
-              if (account.tagPeopleThatCommented) {
-                let comments_with_usernames_of_users_that_commented = "hey ";
-                for (let i = 0; i <= Math.min(allUserThatCommentedPost.length - 1, 5); i++) {
-                  let user = allUserThatCommentedPost[i];
-                  comments_with_usernames_of_users_that_commented += `@${user} `;
-                }
+              try {
+                // IF DEFAULT COMMENT IS ON
+                if (account.tagPeopleThatCommented) {
+                  let comments_with_usernames_of_users_that_commented = "hey ";
+                  for (let i = 0; i <= Math.min(allUserThatCommentedPost.length - 1, 5); i++) {
+                    let user = allUserThatCommentedPost[i];
+                    comments_with_usernames_of_users_that_commented += `@${user} `;
+                  }
 
-                comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length - 1)]}`;
-                await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
-                // IF DEFAULT COMMENT IS OFF
-              } else {
-                await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                  comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length) - 1]}`;
+                  await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                  // IF DEFAULT COMMENT IS OFF
+                } else {
+                  await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length) - 1]);
+                }
+              } catch (error) {
+                console.log('error tryinh to comment. plese see error msg below\n\n', error)
               }
               await page.waitFor(Math.random() * 4000 + 3500);
               await page.click(`form > button`);
@@ -340,15 +344,15 @@ async function bot(accounts) {
   console.log("=================================");
 
 
-  // setTimeout(() => {
-  //   accountSchema.find((err, allAccounts) => {
-  //     if (err) {
-  //       console.log(err);
-  //     } else {
-  //       bot(allAccounts);
-  //     }
-  //   });
-  // }, 60000 * 60);
+  setTimeout(() => {
+    accountSchema.find((err, allAccounts) => {
+      if (err) {
+        console.log(err);
+      } else {
+        bot(allAccounts);
+      }
+    });
+  }, 60000 * 60);
 }
 
 module.exports = bot;
