@@ -7,8 +7,7 @@ const accountSchema = require("./schema/userSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
-app.set('etag', false); // turn off ; //TO AVOID GETTING THE 304 CODE   -> https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
+app.set("etag", false); // turn off ; //TO AVOID GETTING THE 304 CODE   -> https://stackoverflow.com/questions/18811286/nodejs-express-cache-and-304-status-code
 
 require("dotenv").config();
 
@@ -25,9 +24,8 @@ const PORT = process.env.PORT || 5000;
 
 mongoose.connect("mongodb://localhost:27017/instagramBot", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
-
 
 // mongoose.set("useCreateIndex", true);
 
@@ -83,7 +81,7 @@ app.post("/api/createAccount", async (req, res) => {
       }
     );
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.json({
       code: 404,
       message: `Wrong username or password`,
@@ -96,7 +94,7 @@ app.post("/api/login", async (req, res) => {
   try {
     accountSchema.findOne({ memberEmail: req.body.memberEmail }, async (err, foundAccound) => {
       if (err) {
-        console.log(err)
+        console.log(err);
         res.json({
           code: 404,
           message: `${req.body.memberEmail} or password does not match`,
@@ -106,12 +104,10 @@ app.post("/api/login", async (req, res) => {
       } else {
         try {
           const user = { userEmail: req.body.memberEmail };
-          const accessToken = jwt.sign(user,process.env.ACCESS_TOKEN_SECRETE, {
-            expiresIn: "20m"
+          const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRETE, {
+            expiresIn: "20m",
           });
           if (await bcrypt.compareSync(req.body.memberPassword, foundAccound.memberPassword)) {
-
-
             res.json({
               token: accessToken,
               code: 200,
@@ -128,23 +124,22 @@ app.post("/api/login", async (req, res) => {
             console.log(`Wrong password`);
           }
         } catch (error) {
-          console.log('error trying jwt  or bcrypt  ==> ', error)
+          console.log("error trying jwt  or bcrypt  ==> ", error);
         }
       }
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 
 app.post(`/api/verifytoken`, (req, res) => {
   jwt.verify(req.body.token, process.env.ACCESS_TOKEN_SECRETE, (err, tokenData) => {
     if (err) {
-		
       res.json({ code: 404, message: `user not found`, success: false });
     } else {
-console.log(tokenData)
-      accountSchema.findOne({ memberEmail: tokenData.userEmail}, (err, found) => {
+      console.log(tokenData);
+      accountSchema.findOne({ memberEmail: tokenData.userEmail }, (err, found) => {
         // console.log(found);
         if (err) {
           res.json({
@@ -173,10 +168,13 @@ console.log(tokenData)
                 likePost: found.settings.likePost,
                 commentPost: found.settings.commentPost,
                 followAccount: found.settings.followAccount,
+                followByUserName: found.settings.followByUserName,
+                followByHashTags: found.settings.followByHashTags,
               },
               instagramUsername: found.instagramUsername,
               instagramPassword: found.instagramPassword,
               isMemberShipAcctive: found.isMemberShipAcctive,
+              userThatInteractWith: found.userThatInteractWith,
               hashTags: found.hashTags,
               comments: found.comments,
               tagPeopleThatCommented: found.tagPeopleThatCommented,
@@ -184,7 +182,7 @@ console.log(tokenData)
               memberEmail: found.memberEmail,
             });
           } catch (error) {
-            console.log(error)
+            console.log(error);
             res.json({ err: error });
           }
         }

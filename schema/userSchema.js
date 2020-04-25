@@ -26,6 +26,10 @@ const accountSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  userThatInteractWith: {
+    type: Array,
+    default: ["fastandfuriousde", "donmiguelo", "jbalvin", "champagnepapi"],
+  },
   hashTags: {
     type: Array,
     default: [
@@ -93,6 +97,14 @@ const accountSchema = new mongoose.Schema({
     },
   },
   settings: {
+    followByUserName: {
+      type: Boolean,
+      default: false,
+    },
+    followByHashTags: {
+      type: Boolean,
+      default: true,
+    },
     maxDeilyLikes: {
       type: Number,
       default: 10,
