@@ -82,7 +82,7 @@ async function bot(accounts) {
               let allRecentPostLinks = await page.evaluate(() => Array.from(document.querySelectorAll("article :nth-child(2) > a"), (e) => e.href));
 
               // GET THE LAST 15 POST  FROM THE HASGTAG
-              for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 15); i++) {
+              for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 3); i++) {
                 let postLink = allRecentPostLinks[i];
                 await page.waitFor(Math.random() * 4000 + 3500);
                 // console.log(allRecentPostLinks);
