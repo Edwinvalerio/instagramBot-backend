@@ -14,7 +14,7 @@ async function bot(accounts) {
   for (let account of accounts) {
     // RATIAL FUNCTION TO VERY THE FOLLOW
 
-    const ratial = (percentage = 0.4) => {
+    const ratial = (percentage = 0.5) => {
       // CHANGE THE 0.4  TO THE AMMOUNT OF PERCENTAGE OR RATIOL, HIGHEST THE NUMBER THE HIGHER IS THE PERCENTAGE TO TAKE THE ACTION
       return Math.random() < percentage;
     };
@@ -33,7 +33,7 @@ async function bot(accounts) {
 
       if (account.settings.isBotOn && account.isMemberShipAcctive) {
         console.log("BOT ACTIVE FOR => ", account.instagramUsername);
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
         page.setViewport({
@@ -69,7 +69,7 @@ async function bot(accounts) {
           await page.goto(postLink);
           await page.waitFor(Math.random() * 4000 + 3500);
 
-          // GET ALL USERNAMES OF PEOPLE THAT COMMENTED
+          // GET ALL USERNAMES THAT COMMENTED
           const allUserThatCommentedPost = await page.evaluate(() => {
             let a = document.querySelectorAll(`.Igw0E > a`);
             return (a = Array.from(a).map((e) => {
@@ -84,73 +84,86 @@ async function bot(accounts) {
             await page.goto(`https://www.instagram.com/${userThatCommented}/`);
             await page.waitFor(Math.random() * 4000 + 3500);
 
-            let allRecentPostLinks = await page.evaluate(() => Array.from(document.querySelectorAll("article :nth-child(2) > a"), (e) => e.href));
+            // CHECK IF THE USER IS VERIFIED
+            let isUserVerified = await page.evaluate(() => {
+              if (document.querySelector(`.coreSpriteVerifiedBadge`)) {
+                return true;
+              }
+              return false;
+            });
 
-            // GET THE LAST 2 POST  FROM THE HASGTAG
-            for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 2); i++) {
-              let postLink = allRecentPostLinks[i];
-              await page.waitFor(Math.random() * 4000 + 3500);
-              // console.log(allRecentPostLinks);
-              await page.goto(postLink);
-              // GET ACCOUNT USERNAME
-              const accountUser = await page.evaluate(async () => {
-                return await document.querySelector(".ZIAjV").innerText;
-              });
-              console.log("checking ====> ", accountUser);
-              await page.waitFor(Math.random() * 4000 + 3000);
+            if (isUserVerified) {
+              console.log(`skipping Verified User -> ${userThatCommented} `);
+              continue;
+            } else {
+              let allRecentPostLinks = await page.evaluate(() => Array.from(document.querySelectorAll("article :nth-child(2) > a"), (e) => e.href));
 
-              /*=============================
+              // GET THE LAST 2 POST  FROM THE HASGTAG
+              for (let i = 0; i < Math.min(allRecentPostLinks.length - 1, 2); i++) {
+                let postLink = allRecentPostLinks[i];
+                await page.waitFor(Math.random() * 4000 + 3500);
+                // console.log(allRecentPostLinks);
+                await page.goto(postLink);
+                // GET ACCOUNT USERNAME
+                const accountUser = await page.evaluate(async () => {
+                  return document.querySelector(".ZIAjV").innerText;
+                });
+                console.log("checking ====> ", accountUser);
+                await page.waitFor(Math.random() * 4000 + 3000);
+
+                /*=============================
                   FOLLOE ACCOUNT IF ENABLE BY USER
                   =============================*/
-              const todayFollowGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.followed == true).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
+                const todayFollowGiven = account.activities.accountsFollowedByBot.filter((e) => e.date == new Date().toLocaleDateString() && e.followed == true).length; //THIS IS TOTAL OF FOLLOW GIVEN TODAY
 
-              if (account.settings.followAccount && todayFollowGiven < account.settings.maxDeilyFollow && ratial(0.8)) {
-                try {
-                  // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
-                  const isFollowing = await page.evaluate(() => {
-                    return document.querySelector(".oW_lN").innerText == "Following";
-                  });
-
-                  // IF NOT FOLLOWING USER (CLICK FOLLOW)
-                  if (isFollowing == false) {
-                    await page.waitForSelector(".oW_lN");
-                    await page.waitFor(Math.random() * 4000 + 3500);
-                    await page.click(".oW_lN").then(() => {
-                      //   TODO: ADD USER TO DATABASE
-                      console.log("following ===> ", accountUser);
+                if (account.settings.followAccount && todayFollowGiven < account.settings.maxDeilyFollow && ratial(0.8)) {
+                  try {
+                    // CHECK IF YOU ARE CURRENTLY FOLLOWING THE USER
+                    const isFollowing = await page.evaluate(() => {
+                      return document.querySelector(".oW_lN").innerText == "Following";
                     });
 
-                    // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
-                    await page.waitFor(Math.random() * 3000 + 3000);
-                    const isAcctionBlocked = await page.evaluate(() => {
-                      try {
-                        return document.querySelector(`.piCib`) ? true : false;
-                      } catch (error) {
-                        console.log(error);
-                        return false;
+                    // IF NOT FOLLOWING USER (CLICK FOLLOW)
+                    if (isFollowing == false) {
+                      await page.waitForSelector(".oW_lN");
+                      await page.waitFor(Math.random() * 4000 + 3500);
+                      await page.click(".oW_lN").then(() => {
+                        //   TODO: ADD USER TO DATABASE
+                        console.log("following ===> ", accountUser);
+                      });
+
+                      // CHECK IF ACTION IS BLOCKED AND IF IT IS, SKIP ACCOUNT
+                      await page.waitFor(Math.random() * 3000 + 3000);
+                      const isAcctionBlocked = await page.evaluate(() => {
+                        try {
+                          return document.querySelector(`.piCib`) ? true : false;
+                        } catch (error) {
+                          console.log(error);
+                          return false;
+                        }
+                      });
+
+                      if (isAcctionBlocked) {
+                        console.log(`ACTION BLOKED MOTHER FUCKER................`);
+                        await browser.close();
+                        break;
+                      } else {
+                        console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
                       }
-                    });
 
-                    if (isAcctionBlocked) {
-                      console.log(`ACTION BLOKED MOTHER FUCKER................`);
-                      await browser.close();
-                      break;
+                      // ADD TO ACTIVITY
+                      accountActivities["followed"] = true;
+                      accountActivities["username"] = accountUser;
+                      // ADD TO ACTIVITY
+                      await page.waitFor(Math.random() * 4000 + 3500);
                     } else {
-                      console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
+                      console.log("Already following ===> ", accountUser);
                     }
 
-                    // ADD TO ACTIVITY
-                    accountActivities["followed"] = true;
-                    accountActivities["username"] = accountUser;
-                    // ADD TO ACTIVITY
-                    await page.waitFor(Math.random() * 4000 + 3500);
-                  } else {
-                    console.log("Already following ===> ", accountUser);
+                    await page.waitFor(Math.random() * 4000);
+                  } catch (error) {
+                    console.log("Erro Following User", error);
                   }
-
-                  await page.waitFor(Math.random() * 4000);
-                } catch (error) {
-                  console.log("Erro Following User", error);
                 }
               }
 
@@ -459,7 +472,6 @@ async function bot(accounts) {
                 });
 
                 // ONLY TAG 10 ACCOUNTS
-                await page.waitForSelector(".Ypffh");
                 await page.waitFor(Math.random() * 4000 + 3500);
 
                 try {
