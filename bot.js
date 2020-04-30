@@ -202,6 +202,10 @@ async function bot(accounts) {
                       });
 
                       if (isAcctionBlocked) {
+                        accountSchema.findById(account._id, (err, item) => {
+                          item.settings.followAccount = false;
+                          item.save();
+                        });
                         console.log(`ACTION BLOKED MOTHER FUCKER................`);
                         await browser.close();
                         break;
@@ -254,6 +258,10 @@ async function bot(accounts) {
                       });
 
                       if (isAcctionBlocked) {
+                        accountSchema.findById(account._id, (err, item) => {
+                          item.settings.likePost = false;
+                          item.save();
+                        });
                         console.log(`ACTION BLOKED MOTHER FUCKER................`);
                         await browser.close();
                         break;
@@ -306,7 +314,8 @@ async function bot(accounts) {
                         }
 
                         comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length) - 1]}`;
-                        await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                        await page.waitForSelector(`textarea`);
+                        await page.type("textarea", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                         // IF DEFAULT COMMENT IS OFF
                       } else {
                         await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
@@ -335,6 +344,10 @@ async function bot(accounts) {
                     });
 
                     if (isAcctionBlocked) {
+                      accountSchema.findById(account._id, (err, item) => {
+                        item.settings.commentPost = false;
+                        item.save();
+                      });
                       console.log(`ACTION BLOKED MOTHER FUCKER................`);
                       await browser.close();
                       break;
