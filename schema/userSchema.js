@@ -23,8 +23,11 @@ const accountSchema = new mongoose.Schema({
     required: true,
   },
   isMemberShipAcctive: {
-    type: Boolean,
-    default: false,
+    type: String,
+    default: "",
+  },
+  membershipExpirationDate: {
+    type: Date,
   },
   userThatInteractWith: {
     type: Array,

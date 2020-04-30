@@ -362,6 +362,19 @@ async function bot(accounts) {
 
                   await page.waitFor(Math.random() * 4000 + 3500);
                 }
+                console.log("=================================");
+                console.log(accountActivities);
+                console.log("=================================");
+                if (accountActivities["username"]) {
+                  accountSchema.findById(account._id, (err, found) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      found.activities.accountsFollowedByBot.push(accountActivities);
+                      found.save();
+                    }
+                  });
+                }
               }
               // BREAK LOOP AFTER ACTION IS COMPLETED
               break;
