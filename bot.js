@@ -318,7 +318,7 @@ async function bot(accounts) {
                         await page.type("textarea", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                         // IF DEFAULT COMMENT IS OFF
                       } else {
-                        await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                        await page.type("textarea", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                       }
                     } catch (error) {
                       console.log("error tryinh to comment. plese see error msg below\n\n", error);
@@ -599,10 +599,10 @@ async function bot(accounts) {
                     }
 
                     comments_with_usernames_of_users_that_commented += `${account.comments[Math.floor(Math.random() * account.comments.length) - 1]}`;
-                    await page.type(".Ypffh", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                    await page.type("textarea", comments_with_usernames_of_users_that_commented || account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                     // IF DEFAULT COMMENT IS OFF
                   } else {
-                    await page.type(".Ypffh", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
+                    await page.type("textarea", account.comments[Math.floor(Math.random() * account.comments.length - 1)]);
                   }
                 } catch (error) {
                   console.log("error tryinh to comment. plese see error msg below\n\n", error);
