@@ -10,6 +10,8 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 const accountSchema = require("./schema/userSchema");
 
+let run_every = 30; // RUN BOT EVERY 30MIN
+
 async function bot(accounts) {
   const today = new Date().getDay();
 
@@ -684,7 +686,7 @@ async function bot(accounts) {
         bot(allAccounts);
       }
     });
-  }, 60000 * 60);
+  }, 60000 * run_every);
 }
 
 module.exports = bot;
