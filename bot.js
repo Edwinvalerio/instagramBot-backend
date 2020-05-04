@@ -26,7 +26,7 @@ async function bot(accounts) {
       // CHECK IF THE BOT IS ON FOR PARTICAL USER
       if (account.settings.isBotOn && account.isMemberShipAcctive) {
         console.log("BOT ACTIVE FOR => ", account.instagramUsername);
-        const browser = await puppeteer.launch({ headless: false });
+        const browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
 
         // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
