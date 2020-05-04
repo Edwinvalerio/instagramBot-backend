@@ -26,7 +26,7 @@ async function bot(accounts) {
       // CHECK IF THE BOT IS ON FOR PARTICAL USER
       if (account.settings.isBotOn && account.isMemberShipAcctive) {
         console.log("BOT ACTIVE FOR => ", account.instagramUsername);
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
 
         // SET WINDOW VIEW TO RANDOM SIZE TO AVOIN IG TECTECTING THE BOT
@@ -47,7 +47,7 @@ async function bot(accounts) {
 
         if (today == 1) {
           console.log(`Unfollowing -> ${account.memberEmail}`);
-          for (let i = 0; i < Math.min(account.activities.accountsFollowedByBot.length - 1, 20); i++) {
+          for (let i = 0; i < Math.min(account.activities.accountsFollowedByBot.length - 1, 30); i++) {
             let user = account.activities.accountsFollowedByBot[i].username;
             await page.goto(`https://www.instagram.com/${user}/`);
             await page.waitFor(Math.random() * 2000 + 2500);
@@ -64,8 +64,8 @@ async function bot(accounts) {
               page.waitFor(Math.random() * 4000 + 1500);
               accountSchema.findById(account._id, (err, found) => {
                 if (err) {
+                  console.log(err);
                 } else {
-                  ``;
                   let filtered = found.activities.accountsFollowedByBot.filter((item) => {
                     return item.username != user;
                   });
@@ -74,7 +74,25 @@ async function bot(accounts) {
                     if (err) {
                       console.log(err);
                     } else {
-                      console.log("user remove from the following list ");
+                      console.log(`user remove from the following list ${user}`);
+                    }
+                  });
+                }
+              });
+            } else {
+              accountSchema.findById(account._id, (err, found) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  let filtered = found.activities.accountsFollowedByBot.filter((item) => {
+                    return item.username != user;
+                  });
+                  found.activities.accountsFollowedByBot = [...filtered];
+                  found.save((err, saved) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log(`Removing ${user} from the list`);
                     }
                   });
                 }
