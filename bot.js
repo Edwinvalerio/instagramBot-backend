@@ -47,7 +47,8 @@ async function bot(accounts) {
 
         if (today == 1) {
           console.log(`Unfollowing -> ${account.memberEmail}`);
-          for (let i = 0; i < Math.min(account.activities.accountsFollowedByBot.length - 1, 30); i++) {
+          const user_bot_is_following = account.activities.accountsFollowedByBot.filter((a) => a.followed);
+          for (let i = 0; i < Math.min(user_bot_is_following.length - 1, 30); i++) {
             let user = account.activities.accountsFollowedByBot[i].username;
             await page.goto(`https://www.instagram.com/${user}/`);
             await page.waitFor(Math.random() * 2000 + 2500);
@@ -74,7 +75,7 @@ async function bot(accounts) {
                     if (err) {
                       console.log(err);
                     } else {
-                      console.log(`user remove from the following list ${user}`);
+                      console.log(`Unfollowing ->  ${user}`);
                     }
                   });
                 }
@@ -92,7 +93,7 @@ async function bot(accounts) {
                     if (err) {
                       console.log(err);
                     } else {
-                      console.log(`Removing ${user} from the list`);
+                      console.log(`Removing -> ${user}`);
                     }
                   });
                 }
