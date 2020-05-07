@@ -1,7 +1,6 @@
 // const puppeteer = require("puppeteer");
 
 // FIXME: ADDIDED SOME MODULE TO RUN BOT UNDECTECTIVE FROM ->  https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth
-
 // it augments the installed puppeteer with plugin functionality
 const puppeteer = require("puppeteer-extra");
 
@@ -9,6 +8,7 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 const accountSchema = require("./schema/userSchema");
+
 
 let run_every = 30; // RUN BOT EVERY 30MIN
 
