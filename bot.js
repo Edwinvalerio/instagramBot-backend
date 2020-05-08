@@ -280,17 +280,17 @@ async function bot(accounts) {
                           }
                         });
 
-                        if (isAcctionBlocked) {
-                          accountSchema.findById(account._id, (err, item) => {
-                            item.settings.likePost = false;
-                            item.save();
-                          });
-                          console.log(`ACTION BLOKED MOTHER FUCKER................`);
-                          await browser.close();
-                          break;
-                        } else {
-                          console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
-                        }
+                        // if (isAcctionBlocked) {
+                        //   accountSchema.findById(account._id, (err, item) => {
+                        //     item.settings.likePost = false;
+                        //     item.save();
+                        //   });
+                        //   console.log(`ACTION BLOKED MOTHER FUCKER................`);
+                        //   await browser.close();
+                        //   break;
+                        // } else {
+                        //   console.log(`GOOD TO GO!!!!!!!!!!!!!!!!!!!!!!!..........`);
+                        // }
 
                         // ADD TO ACTIVITY
                         accountActivities["liked"] = true;
