@@ -1,7 +1,7 @@
 module.exports = accounts = [
   {
     username: "dog_cats_lover",
-    password: "Bluesky1",
+    password: "your-password-here",
     hashTags: ["love"],
     comments: [
       "i like your content",
